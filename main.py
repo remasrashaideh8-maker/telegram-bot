@@ -1,17 +1,12 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# توكن البوت من BotFather
 TOKEN = "8478445732:AAExzCN-vAwxZnnhGfhUjZ5EEZSjFtBYbxc"
-
-# رابط البوت من Render
 WEBHOOK_URL = "https://telegram-bot-1d3c.onrender.com/webhook"
 
-# أمر /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("✅ البوت يعمل! أرسل لي أمرًا آخر.")
+    await update.message.reply_text("✅ البوت يعمل!")
 
-# تشغيل البوت باستخدام Webhook
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
