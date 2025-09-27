@@ -37,6 +37,10 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /list
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message_target = (
+        update.message if update.message
+        else update.callback_query.message
+    )
     if os.path.exists(TASKS_FILE):
         with open(TASKS_FILE, "r", encoding="utf-8") as f:
             tasks = f.readlines()
@@ -46,7 +50,7 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
             message = "📭 لا توجد مهام بعد."
     else:
         message = "📭 لا يوجد ملف مهام حتى الآن."
-    await update.message.reply_text(message)
+    await message_target.reply_text(message)
 
 # تشغيل البوت
 def main():
@@ -64,3 +68,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
