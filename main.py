@@ -55,7 +55,7 @@ async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await query.message.reply_text("❌ رقم المهمة غير صالح.")
 
-# /add
+# /add لإضافة مهمة
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     if args:
@@ -66,7 +66,7 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❗ استخدم الأمر بهذا الشكل:\n/add المهمة التي تريد إضافتها")
 
-# /list
+# /list أو عرض المهام من زر
 async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_target = (
         update.message if update.message
@@ -83,12 +83,26 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
         message = "📭 لا يوجد ملف مهام حتى الآن."
     await message_target.reply_text(message)
 
-# تشغيل البوت
+# /remind لتفعيل التذكير الخارجي
+async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            tasks = f.readlines()
+        if tasks:
+            message = "⏰ تذكير بالمهام:\n" + "".join(f"- {t}" for t in tasks)
+        else:
+            message = "📭 لا توجد مهام بعد."
+    else:
+        message = "📭 لا يوجد ملف مهام حتى الآن."
+    await update.message.reply_text(message)
+
+# تشغيل البوت باستخدام Webhook
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("add", add))
     app.add_handler(CommandHandler("list", list_tasks))
+    app.add_handler(CommandHandler("remind", remind))
     app.add_handler(CallbackQueryHandler(handle_button))
     app.run_webhook(
         listen="0.0.0.0",
