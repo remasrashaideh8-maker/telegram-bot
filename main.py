@@ -85,9 +85,9 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /remind لتفعيل التذكير الخارجي
 async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if os.path.exists(TASKS_FILE):
-        with open(TASKS_FILE, "r", encoding="utf-8") as f:
-            tasks = f.readlines()
+    if os.path.exists("tasks.txt"):
+        with open("tasks.txt", "r", encoding="utf-8") as f:
+            tasks = f.readlines(app.add_handler(CommandHandler("remind", remind)))
         if tasks:
             message = "⏰ تذكير بالمهام:\n" + "".join(f"- {t}" for t in tasks)
         else:
@@ -113,3 +113,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
