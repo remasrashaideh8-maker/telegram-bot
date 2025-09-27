@@ -10,7 +10,8 @@ TASKS_FILE = "tasks.txt"
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("➕ إضافة مهمة", callback_data="add")],
-        [InlineKeyboardButton("📋 عرض المهام", callback_data="list")]
+        [InlineKeyboardButton("📋 عرض المهام", callback_data="list")],
+        [InlineKeyboardButton("✅ أتممت مهمة", callback_data="done")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("مرحبًا! اختر إجراء:", reply_markup=reply_markup)
@@ -19,10 +20,40 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
+
     if query.data == "add":
         await query.message.reply_text("❗ استخدم الأمر بهذا الشكل:\n/add المهمة التي تريد إضافتها")
+
     elif query.data == "list":
         await list_tasks(update, context)
+
+    elif query.data == "done":
+        if os.path.exists(TASKS_FILE):
+            with open(TASKS_FILE, "r", encoding="utf-8") as f:
+                tasks = f.readlines()
+            if tasks:
+                keyboard = [
+                    [InlineKeyboardButton(t.strip(), callback_data=f"complete:{i}")]
+                    for i, t in enumerate(tasks)
+                ]
+                reply_markup = InlineKeyboardMarkup(keyboard)
+                await query.message.reply_text("اختر المهمة التي أتممتها:", reply_markup=reply_markup)
+            else:
+                await query.message.reply_text("📭 لا توجد مهام.")
+        else:
+            await query.message.reply_text("📭 لا يوجد ملف مهام.")
+
+    elif query.data.startswith("complete:"):
+        index = int(query.data.split(":")[1])
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            tasks = f.readlines()
+        if 0 <= index < len(tasks):
+            completed = tasks.pop(index)
+            with open(TASKS_FILE, "w", encoding="utf-8") as f:
+                f.writelines(tasks)
+            await query.message.reply_text(f"✅ تم إنهاء المهمة: {completed.strip()}")
+        else:
+            await query.message.reply_text("❌ رقم المهمة غير صالح.")
 
 # /add
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -68,4 +99,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
