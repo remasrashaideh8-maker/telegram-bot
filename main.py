@@ -16,6 +16,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("مرحبًا! اختر إجراء:", reply_markup=reply_markup)
 
+# /id لإظهار رقم Chat ID
+async def show_chat_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    await update.message.reply_text(f"📌 Chat ID الخاص بك هو:\n`{chat_id}`")
+
 # التعامل مع ضغط الأزرار
 async def handle_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -85,9 +90,9 @@ async def list_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # /remind لتفعيل التذكير الخارجي
 async def remind(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if os.path.exists("tasks.txt"):
-        with open("tasks.txt", "r", encoding="utf-8") as f:
-            tasks = f.readlines(app.add_handler(CommandHandler("remind", remind)))
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, "r", encoding="utf-8") as f:
+            tasks = f.readlines()
         if tasks:
             message = "⏰ تذكير بالمهام:\n" + "".join(f"- {t}" for t in tasks)
         else:
@@ -103,6 +108,7 @@ def main():
     app.add_handler(CommandHandler("add", add))
     app.add_handler(CommandHandler("list", list_tasks))
     app.add_handler(CommandHandler("remind", remind))
+    app.add_handler(CommandHandler("id", show_chat_id))
     app.add_handler(CallbackQueryHandler(handle_button))
     app.run_webhook(
         listen="0.0.0.0",
@@ -113,4 +119,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
