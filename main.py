@@ -1,24 +1,20 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "8478445732:AAExzCN-vAwxZnnhGfhUjZ5EEZSjFtBYbxc"  # توكن البوت الحقيقي
-WEBHOOK_URL = "https://telegram-bot-1d3c.onrender.com/webhook"  # رابط البوت من Render
+# توكن البوت من BotFather
+TOKEN = "8478445732:AAExzCN-vAwxZnnhGfhUjZ5EEZSjFtBYbxc"
+
+# رابط البوت من Render
+WEBHOOK_URL = "https://telegram-bot-1d3c.onrender.com/webhook"
 
 # أمر /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton("Add Task", switch_inline_query_current_chat="/add")]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("مرحبًا! اختر إجراء:", reply_markup=reply_markup)
-
-# أمر /add
-async def add(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("اكتب المهمة بعد /add")
+    await update.message.reply_text("✅ البوت يعمل! أرسل لي أمرًا آخر.")
 
 # تشغيل البوت باستخدام Webhook
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("add", add))
     app.run_webhook(
         listen="0.0.0.0",
         port=8080,
